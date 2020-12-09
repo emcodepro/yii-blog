@@ -7,7 +7,6 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    // 'language' => 'az',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -15,8 +14,8 @@ $config = [
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '4rhKagRxik21HKXUVGNKBKMufest-QZG',
-            'baseUrl' => ''
+            'cookieValidationKey' => 'C9RWz4aEGaN0WjDGSCfrPYLydk-QQfzl',
+            'baseUrl' => '',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -24,6 +23,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => 'auth/login',
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -48,11 +48,14 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            // 'suffix' => '.java',
             'rules' => [
-              '<action:\w+>' => 'site/<action>' // or about|contact|login
             ],
         ],
+    ],
+    'modules' => [
+         'admin' => [
+           'class' => 'app\modules\admin\module',
+         ],
     ],
     'params' => $params,
 ];

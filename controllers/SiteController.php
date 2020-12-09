@@ -4,12 +4,17 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-
-class SiteController extends AppController
+use app\models\Article;
+use app\models\Category;
+use yii\helpers\ArrayHelper;
+use yii\data\Pagination;
+use app\models\CommentForm;
+class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -60,7 +65,57 @@ class SiteController extends AppController
      */
     public function actionIndex()
     {
-        return $this->render('index');
+
+      $data = Article::getAll(3);
+      $popularPosts = Article::getPopular();
+      $recentPosts = Article::getRecent();
+      $categories = Category::getAll();
+
+        return $this->render('index', [
+          'articles' => $data['articles'],
+          'pages' => $data['pages'],
+          'popularPosts' => $popularPosts,
+          'recentPosts' => $recentPosts,
+          'categories' => $categories,
+        ]);
+    }
+
+    public function actionRead($id)
+    {
+      $article = Article::findOne($id);
+      $popularPosts = Article::getPopular();
+      $recentPosts = Article::getRecent();
+      $categories = Category::getAll();
+      $tags = ArrayHelper::map($article->tags, 'id', 'title');
+      $comments = $article->comments;
+      $commentForm = new CommentForm();
+      //debug($comments);die;
+      $article->updateViews();
+      return $this->render('read', [
+        'article' => $article,
+        'popularPosts' => $popularPosts,
+        'recentPosts' => $recentPosts,
+        'categories' => $categories,
+        'tags' => $tags,
+        'comments' => $comments,
+        'commentForm' => $commentForm,
+      ]);
+    }
+
+    public function actionCategory($id)
+    {
+      $data = Article::getByCategory($id, 4);
+      $popularPosts = Article::getPopular();
+      $recentPosts = Article::getRecent();
+      $categories = Category::getAll();
+
+      return $this->render('category', [
+        'articles' => $data['articles'],
+        'pages' => $data['pages'],
+        'popularPosts' => $popularPosts,
+        'recentPosts' => $recentPosts,
+        'categories' => $categories,
+      ]);
     }
 
     /**
@@ -68,22 +123,22 @@ class SiteController extends AppController
      *
      * @return Response|string
      */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
+    // public function actionLogin()
+    // {
+    //     if (!Yii::$app->user->isGuest) {
+    //         return $this->goHome();
+    //     }
+    //
+    //     $model = new LoginForm();
+    //     if ($model->load(Yii::$app->request->post()) && $model->login()) {
+    //         return $this->goBack();
+    //     }
+    //
+    //     $model->password = '';
+    //     return $this->render('login', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Logout action.
@@ -120,13 +175,8 @@ class SiteController extends AppController
      *
      * @return string
      */
-     public function actionAbout()
-     {
-         return $this->render('about');
-     }
-
-     public function actionHello()
-     {
-         return $this->render("hello");
-     }
+    public function actionAbout()
+    {
+        return $this->render('about');
+    }
 }

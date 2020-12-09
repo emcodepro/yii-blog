@@ -1,5 +1,6 @@
 <?php
-function plus($a,$b){
-  return $a+$b;
+
+function debug($arr)
+{
+  echo "<pre>". print_r($arr,true) . "</pre>";
 }
- ?>
